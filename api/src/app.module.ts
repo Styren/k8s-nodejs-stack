@@ -4,18 +4,33 @@ import { AppService } from './app.service';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { HealthModule } from './health.module';
+import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
+      imports: [ConfigModule, PrometheusModule.register()],
       useFactory: async (configService: ConfigService) => ({
         type: 'postgres',
-        host: configService.get<string>('POSTGRES_HOST'),
         port: 5432,
-        username: configService.get<string>('POSTGRES_USER'),
-        password: configService.get<string>('POSTGRES_PASSWORD'),
-        database: configService.get<string>('POSTGRES_DB'),
+        replication: {
+          master: {
+            host: configService.get<string>('POSTGRES_HOST'),
+            username: configService.get<string>('POSTGRES_USER'),
+            password: configService.get<string>('POSTGRES_PASSWORD'),
+            database: configService.get<string>('POSTGRES_DB'),
+          },
+          slaves: configService.get<string>('POSTGRES_REPLICA_HOST')
+            ? [
+                {
+                  host: configService.get<string>('POSTGRES_REPLICA_HOST'),
+                  username: configService.get<string>('POSTGRES_USER'),
+                  password: configService.get<string>('POSTGRES_PASSWORD'),
+                  database: configService.get<string>('POSTGRES_DB'),
+                },
+              ]
+            : [],
+        },
         entities: [],
         synchronize: true,
       }),
