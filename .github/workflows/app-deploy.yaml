@@ -1,0 +1,90 @@
+name: 'App build & deploy'
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: 'Build and push artifacts'
+    runs-on: [self-hosted, linux-default]
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@master
+
+      - name: Login to Docker Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ???
+          username: ${{ secrets.DOCKER_REGISTRY_USERNAME }}
+          password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
+
+      - name: Compile project (maven)
+        run: go build
+
+      - name: Run tests
+        run: go test
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+
+  deploy:
+    name: 'Run kustomize and deploy to k8s'
+    needs: build
+    strategy:
+      matrix:
+        env: [staging, production]
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@master
+
+      - name: Kustomize install
+        uses: imranismail/setup-kustomize@v1
+        with:
+          kustomize-version: '3.8.1'
+
+      - name: 'Kustomize build'
+        working-directory: backend/kubernetes/overlays/${{ matrix.env }}
+        run: |
+          kustomize edit set image IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          kustomize build . > ../../../${{ matrix.env }}.yaml
+
+      - name: Create kubeconfig file
+        uses: infraway/generate-kube-config@v1.2
+        with:
+          kubeconfig: ${{ secrets.KUBECONFIG }}
+
+
+      - name: 'Deploy'
+        uses: jtalk/k8s-deploy@v2
+        with:
+          namespace: '${{ matrix.env }}'
+          manifests: |
+              ./backend/${{ matrix.env }}.yaml
+          images: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}'
+          imagepullsecrets: |
+            docker-registry-auth
+          kubectl-version: 'latest'

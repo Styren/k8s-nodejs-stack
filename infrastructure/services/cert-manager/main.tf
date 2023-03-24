@@ -1,0 +1,12 @@
+resource "helm_release" "cert_manager" {
+  name       = var.name
+  version    = var.helm_version
+  repository = var.helm_repository
+  chart      = var.helm_chart
+
+  set {
+    name  = "installCRDs"
+    value = "true"
+  }
+}
+
