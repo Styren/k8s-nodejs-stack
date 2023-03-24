@@ -10,7 +10,7 @@ env:
 
 defaults:
   run:
-    working-directory: app
+    working-directory: api
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
