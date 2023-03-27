@@ -79,8 +79,6 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=ref,event=branch
-            type=ref,event=pr
             type=sha
 
       - name: Build and push Docker image
@@ -102,5 +100,5 @@ jobs:
       - name: Deploy chart
         uses: WyriHaximus/github-action-helm3@v3
         with:
-          exec: helm upgrade nodejs-app ./api/charts --install --wait --atomic --namespace=default --set-string 'image.repository=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}' --set-string 'image.tag=${{ env.GITHUB_SHA }}'
+          exec: helm upgrade nodejs-app ./api/charts --install --wait --atomic --namespace=default --set-string 'image.repository=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}' --set-string 'image.tag=${{ steps.meta.outputs.tags[0] }}'
           kubeconfig: '${{ secrets.KUBECONFIG }}'

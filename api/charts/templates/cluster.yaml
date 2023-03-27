@@ -2,7 +2,7 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: {{ include "nodejs-app.fullname" . }}
+  name: {{ include "nodejs-app.fullname" . }}-db
   labels:
     {{- include "nodejs-app.labels" . | nindent 4 }}
 spec:
