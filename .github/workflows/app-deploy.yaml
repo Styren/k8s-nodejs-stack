@@ -95,12 +95,8 @@ jobs:
       - name: 'Checkout'
         uses: actions/checkout@master
 
-      - name: Deploy
-        uses: Budibase/helm@v1.8.0
+      - name: Deploy chart
+        uses: WyriHaximus/github-action-helm3@v3
         with:
-          release: 'nodejs-app'
-          chart: 'api/charts'
-          token: '${{ github.token }}'
-          namespace: default
-        env:
-          KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
+          exec: helm upgrade nodejs-app ./api/charts --install --wait --atomic --namespace=default
+          kubeconfig: '${{ secrets.KUBECONFIG }}'

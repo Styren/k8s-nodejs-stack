@@ -31,7 +31,7 @@ brew install terragrunt helm
 # Installation
 
 1. Clone this repository
-2. Create an GitHub repository secret named KUBECONFIG (`Settings` > `Secrets & Variables` > `New repository secret`)
+2. Create an GitHub repository secret named KUBECONFIG (`Settings` > `Secrets & Variables` > `Actions` > `New repository secret`)
 3. Create a Personal access token (PAT) with `read:packages` permission (https://github.com/settings/tokens)
 4. Fill in your email, the PAT and your GitHub username in the file `infrastructure/terraform.tfvars`
 5. Run `terragrunt run-all apply` in the `infrastructure` directory
