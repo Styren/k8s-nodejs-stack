@@ -96,11 +96,11 @@ jobs:
       - name: 'Checkout'
         uses: actions/checkout@master
 
-			- name: Deploy
-				uses: deliverybot/helm@v1
-				with:
-					release: 'nodejs-app'
-					chart: 'api/charts'
-					token: '${{ github.token }}'
-				env:
-					KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
+      - name: Deploy
+        uses: deliverybot/helm@v1
+        with:
+          release: 'nodejs-app'
+          chart: 'api/charts'
+          token: '${{ github.token }}'
+        env:
+          KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
