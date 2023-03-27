@@ -6,7 +6,7 @@ metadata:
   labels:
     {{- include "nodejs-app.labels" . | nindent 4 }}
 spec:
-  instances: {{ .Values.postgres.instances }}
+  instances: {{ .Values.postgres.replicaCount }}
   storage:
     size: {{ .Values.postgres.storage.size }}
 {{- end }}

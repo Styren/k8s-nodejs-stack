@@ -6,7 +6,7 @@ image:
 postgres:
   enabled: true
   database: app
-  instances: 3
+  replicaCount: 3
   storage:
     size: 10G
 
