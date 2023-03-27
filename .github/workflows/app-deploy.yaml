@@ -96,7 +96,7 @@ jobs:
         uses: actions/checkout@master
 
       - name: Deploy
-        uses: glopezep/helm@v1.7.1
+        uses: Budibase/helm@v1.8.0
         with:
           release: 'nodejs-app'
           chart: 'api/charts'
