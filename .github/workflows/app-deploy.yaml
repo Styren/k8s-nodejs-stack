@@ -101,5 +101,6 @@ jobs:
           release: 'nodejs-app'
           chart: 'api/charts'
           token: '${{ github.token }}'
+          namespace: default
         env:
           KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
