@@ -21,11 +21,10 @@ brew install terragrunt helm
     - Distributed tracing with Jaeger
     - Pulls and aggregates metrics from all services
     - Telemetry, databases, tracing connected to Grafana
-- CI
+- CI+CD with GitHub actions
     - Automatic linting, testing on PRs
-- CD
     - Build, push to GitHub packages
-    - Deploy automatically to Kubernetes
+    - Deploy automatically on merge
 - Automatic TLS certificates
 
 # Installation

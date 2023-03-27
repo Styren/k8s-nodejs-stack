@@ -27,6 +27,8 @@ jobs:
   build:
     name: 'Build and push artifacts'
     runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.meta.outputs.tags[0] }}
     steps:
       - name: 'Checkout'
         uses: actions/checkout@master
@@ -100,5 +102,5 @@ jobs:
       - name: Deploy chart
         uses: WyriHaximus/github-action-helm3@v3
         with:
-          exec: helm upgrade nodejs-app ./api/charts --install --wait --atomic --namespace=default --set 'image.repository=${{ steps.meta.outputs.tags[0] }}'
+          exec: helm upgrade nodejs-app ./api/charts --install --wait --atomic --namespace=default --set 'image.repository=${{ needs.build.outputs.tag }}'
           kubeconfig: '${{ secrets.KUBECONFIG }}'
