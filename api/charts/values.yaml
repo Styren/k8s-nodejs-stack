@@ -1,7 +1,6 @@
 host: app.x.symbiosis.host
 
 image:
-  tag:
   imagePullPolicy: IfNotPresent
 
 postgres:
