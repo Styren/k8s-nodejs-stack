@@ -50,9 +50,3 @@ kubectl get secret -n prometheus-stack grafana-password --template={{.data.passw
 ```bash
 kubectl exec -it svc/main-database-rw psql
 ```
-
-## How do I tear down all resources created by this project?
-
-```bash
-kubectl exec -it svc/main-database-rw psql
-```

@@ -31,8 +31,10 @@ spec:
           value: {{ .Values.postgres.database }}
         - name: POSTGRES_HOST
           value: {{ include "nodejs-app.fullname" . }}-db-rw
+{{- if gt .Chart.AppVersion 1 }}
         - name: POSTGRES_REPLICA_HOST
           value: {{ include "nodejs-app.fullname" . }}-db-ro
+{{- end }}
         - name: POSTGRES_USER
           valueFrom:
             secretKeyRef:
