@@ -21,14 +21,13 @@ defaults:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
   build:
     name: 'Build and push artifacts'
     runs-on: ubuntu-latest
     outputs:
-      tag: ${{ steps.meta.outputs.tags[0] }}
+      tag: ${{ steps.meta.outputs.tags }}
     steps:
       - name: 'Checkout'
         uses: actions/checkout@master
@@ -102,5 +101,5 @@ jobs:
       - name: Deploy chart
         uses: WyriHaximus/github-action-helm3@v3
         with:
-          exec: helm upgrade nodejs-app ./api/charts --install --wait --atomic --namespace=default --set 'image.repository=${{ needs.build.outputs.tag }}'
+          exec: helm upgrade nodejs-app ./api/charts --install --wait --atomic --namespace=default --set "image.repository=${{ needs.build.outputs.tag }}"
           kubeconfig: '${{ secrets.KUBECONFIG }}'
