@@ -96,30 +96,11 @@ jobs:
       - name: 'Checkout'
         uses: actions/checkout@master
 
-      - name: Kustomize install
-        uses: imranismail/setup-kustomize@v1
-        with:
-          kustomize-version: '3.8.1'
-
-      - name: 'Kustomize build'
-        working-directory: backend/kubernetes/overlays/${{ matrix.env }}
-        run: |
-          kustomize edit set image IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-          kustomize build . > ../../../${{ matrix.env }}.yaml
-
-      - name: Create kubeconfig file
-        uses: infraway/generate-kube-config@v1.2
-        with:
-          kubeconfig: ${{ secrets.KUBECONFIG }}
-
-
-      - name: 'Deploy'
-        uses: jtalk/k8s-deploy@v2
-        with:
-          namespace: '${{ matrix.env }}'
-          manifests: |
-              ./backend/${{ matrix.env }}.yaml
-          images: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}'
-          imagepullsecrets: |
-            docker-registry-auth
-          kubectl-version: 'latest'
+			- name: Deploy
+				uses: deliverybot/helm@v1
+				with:
+					release: 'nodejs-app'
+					chart: 'api/charts'
+					token: '${{ github.token }}'
+				env:
+					KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'

@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "nodejs-app.fullname" . }}
+  labels:
+    {{- include "nodejs-app.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "nodejs-app.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "nodejs-app.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: 3000
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 3000
+          failureThreshold: 30
+          periodSeconds: 10
+        env:
+        - name: POSTGRES_DB
+          value: {{ .Values.postgres.database }}
+        - name: POSTGRES_HOST
+          value: {{ include "nodejs-app.fullname" . }}-db-rw
+        - name: POSTGRES_REPLICA_HOST
+          value: {{ include "nodejs-app.fullname" . }}-db-ro
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "nodejs-app.fullname" . }}-{{ .Values.postgres.database }}
+              key: username
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "nodejs-app.fullname" . }}-{{ .Values.postgres.database }}
+              key: password
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+      topologySpreadConstraints:
+      - labelSelector:
+          matchLabels:
+            app: backend
+        maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway

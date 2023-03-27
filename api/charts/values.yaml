@@ -1,0 +1,32 @@
+host: app.x.symbiosis.host
+
+image:
+  repository: ghcr.io/styren/ultimate-k8s
+
+postgres:
+  enabled: true
+  database: app
+  storage:
+    size: 10G
+
+resources:
+  limits:
+    memory: 256Mi
+  requests:
+    cpu: 200m
+    memory: 64Mi
+
+hpa:
+  minReplicas: 1
+  maxReplicas: 10
+
+service:
+  port: 3000
+
+ingress:
+  enabled: true
+  annotations:
+    acme.cert-manager.io/http01-edit-in-place: "true"
+    kubernetes.io/ingress.class: "nginx"
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt"
