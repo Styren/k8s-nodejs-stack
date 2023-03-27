@@ -36,12 +36,12 @@ spec:
         - name: POSTGRES_USER
           valueFrom:
             secretKeyRef:
-              name: {{ include "nodejs-app.fullname" . }}-{{ .Values.postgres.database }}
+              name: {{ include "nodejs-app.fullname" . }}-db-{{ .Values.postgres.database }}
               key: username
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ include "nodejs-app.fullname" . }}-{{ .Values.postgres.database }}
+              name: {{ include "nodejs-app.fullname" . }}-db-{{ .Values.postgres.database }}
               key: password
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
