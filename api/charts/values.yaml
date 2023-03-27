@@ -1,7 +1,7 @@
 host: app.x.symbiosis.host
 
-image:
-  repository: ghcr.io/styren/ultimate-k8s
+# TODO: Update to point to your repository
+image: ghcr.io/symbiosis-cloud/ultimate-k8s:latest
 
 postgres:
   enabled: true

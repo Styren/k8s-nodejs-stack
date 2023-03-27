@@ -92,11 +92,11 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: 'Checkout'
+      - name: Checkout
         uses: actions/checkout@master
 
       - name: Deploy chart
         uses: WyriHaximus/github-action-helm3@v3
         with:
-          exec: helm upgrade nodejs-app ./api/charts --install --wait --atomic --namespace=default
+          exec: helm upgrade nodejs-app ./api/charts --install --wait --atomic --namespace=default --set-string 'image=${{ steps.meta.outputs.tags }}'
           kubeconfig: '${{ secrets.KUBECONFIG }}'
