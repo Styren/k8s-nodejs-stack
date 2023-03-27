@@ -98,5 +98,5 @@ jobs:
       - name: Deploy chart
         uses: WyriHaximus/github-action-helm3@v3
         with:
-          exec: helm upgrade nodejs-app ./api/charts --install --wait --atomic --namespace=default --set-string 'image=${{ steps.meta.outputs.tags }}'
+          exec: helm upgrade nodejs-app ./api/charts --install --wait --atomic --namespace=default --set-string 'image.tag=${{ steps.meta.outputs.tags }}'
           kubeconfig: '${{ secrets.KUBECONFIG }}'
