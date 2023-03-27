@@ -7,10 +7,6 @@ locals {
   }
 }
 
-module "cert_manager" {
-  source = "./services/cert-manager"
-}
-
 resource "kubernetes_manifest" "jaeger" {
   manifest = {
     apiVersion = "jaegertracing.io/v1"
@@ -71,6 +67,72 @@ resource "kubernetes_manifest" "postgres" {
       instances = 3
       storage = {
         size = "10Gi"
+      }
+    }
+  }
+}
+
+resource "kubernetes_default_service_account" "default" {
+  metadata {
+    namespace = "default"
+  }
+  image_pull_secret {
+    name = kubernetes_secret.github_pat.metadata.0.name
+  }
+}
+
+resource "kubernetes_secret" "github_pat" {
+  metadata {
+    name = "github-pat"
+  }
+  data = {
+    ".dockerconfigjson" = <<EOF
+    {
+      "auths": {
+        "${var.container_registry}": {
+          "username": "${var.github_username}",
+          "password": "${var.github_pat}",
+          "auth": "${base64encode("${var.github_username}:${var.github_pat}")}"
+        }
+      }
+    }
+    EOF
+  }
+  type = "kubernetes.io/dockerconfigjson"
+}
+
+resource "helm_release" "metrics_server" {
+  name       = "metrics-server"
+  repository = "https://kubernetes-sigs.github.io/metrics-server"
+  chart      = "metrics-server"
+  version    = "3.8.4"
+
+  namespace  = "metrics-server"
+  create_namespace = true
+}
+
+
+resource "kubernetes_manifest" "cluster_issuer" {
+  manifest = {
+    apiVersion = "cert-manager.io/v1"
+    kind       = "ClusterIssuer"
+    metadata = {
+      name      = "letsencrypt"
+    }
+    spec = {
+      acme = {
+        email = var.acme_email
+        server = "https://acme-v02.api.letsencrypt.org/directory"
+        privateKeySecretRef = {
+          name = "letsencrypt-issuer-key"
+        }
+        solvers = [{
+          http01 = {
+            ingress = {
+              class = "nginx"
+            }
+          }
+        }]
       }
     }
   }

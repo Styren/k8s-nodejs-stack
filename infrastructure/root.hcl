@@ -19,8 +19,10 @@ inputs = {
     "cert-manager.io/cluster-issuer" : "letsencrypt"
   }
   domain              = "x.symbiosis.host"
-}
+  container_registry              = "ghcr.io"
 
+  github_username              = "Styren"
+}
 
 generate "provider" {
   path = "providers.tf"

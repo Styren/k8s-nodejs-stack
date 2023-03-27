@@ -12,6 +12,11 @@ dependency "cloudnative_pg" {
   skip_outputs = true
 }
 
+dependency "cert_manager" {
+  config_path = "./services/cert-manager"
+  skip_outputs = true
+}
+
 remote_state {
   backend = "kubernetes"
   config = {

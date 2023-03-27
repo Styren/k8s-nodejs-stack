@@ -1,12 +1,6 @@
 ---
-namespaceOverride: ""
-
 alertmanager:
   enabled: true
-  ## Alertmanager configuration directives
-  ## ref: https://prometheus.io/docs/alerting/configuration/#configuration-file
-  ##      https://prometheus.io/webtools/alerting/routing-tree-editor/
-  ##
   alertmanagerSpec:
     storage:
       volumeClaimTemplate:
@@ -21,98 +15,9 @@ alertmanager:
       resolve_timeout: 5m
     templates:
       - '/etc/alertmanager/config/*.tmpl'
-    route:
-      receiver: 'slack-notifications'
-      routes:
-        - receiver: "empty"
-          match:
-            alertname: Watchdog
-        # Disable since it makes a ton of noise for do-agents
-        # TODO find a better way to mute it
-        - receiver: "empty"
-          match:
-            alertname: CPUThrottlingHigh
-        - receiver: "empty"
-          match:
-            alertname: KubeMemoryOvercommit
-        - receiver: "empty"
-          match:
-            alertname: InfoInhibitor
-    receivers:
-      - name: "empty"
-      - name: 'slack-notifications'
-        slack_configs:
-          - channel: '#engineering'
-            send_resolved: true
-            icon_url: https://avatars3.githubusercontent.com/u/3380462
-            text: '{{ template "slack.text" . }}'
-            title: '{{ template "slack.title" . }}'
-            color: '{{ template "slack.color" . }}'
-
-
-  templateFiles:
-    slack_1.tmpl: |-
-        {{ define "__alert_severity" -}}
-            {{- if eq .CommonLabels.severity "critical" -}}
-            *Severity:* `Critical`
-            {{- else if eq .CommonLabels.severity "warning" -}}
-            *Severity:* `Warning`
-            {{- else if eq .CommonLabels.severity "info" -}}
-            *Severity:* `Info`
-            {{- else -}}
-            *Severity:* :question: {{ .CommonLabels.severity }}
-            {{- end }}
-        {{- end }}
-        {{ define "slack.text" -}}
-            {{ template "__alert_severity" . }}
-            {{- if (index .Alerts 0).Annotations.summary }}
-            {{- "\n" -}}
-            *Summary:* {{ (index .Alerts 0).Annotations.summary }}
-            {{- end }}
-            {{ range .Alerts }}
-                {{- if .Annotations.description }}
-                {{- "\n" -}}
-                {{ .Annotations.description }}
-                {{- "\n" -}}
-                {{- end }}
-                {{- if .Annotations.message }}
-                {{- "\n" -}}
-                {{ .Annotations.message }}
-                {{- "\n" -}}
-                {{- end }}
-            {{- end }}
-        {{- end }}
-        {{ define "slack.title" -}}
-          [{{ .Status | toUpper -}}
-          {{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{- end -}}
-          ] {{ .CommonLabels.alertname }}
-        {{- end }}
-        {{ define "slack.color" -}}
-            {{ if eq .Status "firing" -}}
-                {{ if eq .CommonLabels.severity "warning" -}}
-                    warning
-                {{- else if eq .CommonLabels.severity "critical" -}}
-                    danger
-                {{- else -}}
-                    #439FE0
-                {{- end -}}
-            {{ else -}}
-            good
-            {{- end }}
-        {{- end }}
 
   ingress:
-    enabled: true
-    annotations:
-      "acme.cert-manager.io/http01-edit-in-place": "true"
-      "kubernetes.io/ingress.class": "nginx"
-      "kubernetes.io/tls-acme": "true"
-      "cert-manager.io/cluster-issuer": "letsencrypt"
-    hosts: ["${alertmanager_host}"]
-    pathType: Prefix
-    tls:
-      - secretName: alertmanager-general-tls
-        hosts: ["${alertmanager_host}"]
+    enabled: false
 
 grafana:
   enabled: true
@@ -161,12 +66,6 @@ prometheus:
             requests:
               storage: 32Gi
     shards: 1
-    serviceMonitorNamespaceSelector:
-      matchLabels:
-        prometheus: kube-prometheus
-    probeNamespaceSelector:
-      matchLabels:
-        prometheus: kube-prometheus
     probeSelectorNilUsesHelmValues: false
     podMonitorSelectorNilUsesHelmValues: false
     serviceMonitorSelectorNilUsesHelmValues: false
@@ -175,17 +74,7 @@ prometheus:
     enabled: false
 
   ingress:
-    enabled: true
-    annotations:
-      "acme.cert-manager.io/http01-edit-in-place": "true"
-      "kubernetes.io/ingress.class": "nginx"
-      "kubernetes.io/tls-acme": "true"
-      "cert-manager.io/cluster-issuer": "letsencrypt"
-    pathType: Prefix
-    hosts: ["${prometheus_host}"]
-    tls:
-      - secretName: prometheus-general-tls
-        hosts: ["${prometheus_host}"]
+    enabled: false
 
 prometheus-node-exporter:
   service:

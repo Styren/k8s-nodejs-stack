@@ -3,4 +3,8 @@ resource "helm_release" "nginx_ingress" {
   version    = var.helm_version
   repository = var.helm_repository
   chart      = var.helm_chart
+  namespace  = "nginx-ingress"
+  create_namespace  = true
+
+  wait = true
 }

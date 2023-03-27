@@ -3,6 +3,6 @@ terraform {
   backend "kubernetes" {
     config_path      = "/Users/bustnetlight.com/src/ultimate-k8s/infrastructure/config"
     load_config_file = true
-    secret_suffix    = "services-nginx-ingress"
+    secret_suffix    = "services-cert-manager"
   }
 }
