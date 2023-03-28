@@ -6,7 +6,7 @@ variable "blackbox_exporter_name" {
   default = "blackbox-exporter"
 }
 
-variable "helm_repository" {
+variable "prometheus_helm_repository" {
   default = "https://prometheus-community.github.io/helm-charts"
 }
 
@@ -18,16 +18,16 @@ variable "prometheus_stack_helm_version" {
   default = "45.6.0"
 }
 
-variable "blackbox_exporter_helm_chart" {
-  default = "prometheus-blackbox-exporter"
+variable "jaeger_helm_repository" {
+  default = "https://jaegertracing.github.io/helm-charts"
 }
 
-variable "blackbox_exporter_helm_version" {
-  default = "5.6.0"
+variable "jaeger_helm_chart" {
+  default = "jaeger-operator"
 }
 
-variable "namespace" {
-  default = "default"
+variable "jaeger_helm_version" {
+  default = "2.24.0"
 }
 
 variable "domain" {}

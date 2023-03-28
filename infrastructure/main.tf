@@ -7,6 +7,17 @@ locals {
   }
 }
 
+resource "kubernetes_config_map" "domain" {
+  metadata {
+    name      = "domain"
+  }
+
+  data = {
+    domain = var.domain
+  }
+}
+
+
 resource "kubernetes_manifest" "jaeger" {
   manifest = {
     apiVersion = "jaegertracing.io/v1"
@@ -55,23 +66,6 @@ resource "kubernetes_ingress_v1" "jaeger" {
   }
 }
 
-resource "kubernetes_manifest" "postgres" {
-  manifest = {
-    apiVersion = "postgresql.cnpg.io/v1"
-    kind       = "Cluster"
-    metadata = {
-      namespace  = "default"
-      name      = "main-database"
-    }
-    spec = {
-      instances = 3
-      storage = {
-        size = "10Gi"
-      }
-    }
-  }
-}
-
 resource "kubernetes_default_service_account" "default" {
   metadata {
     namespace = "default"
@@ -101,39 +95,8 @@ resource "kubernetes_secret" "github_pat" {
   type = "kubernetes.io/dockerconfigjson"
 }
 
-resource "helm_release" "metrics_server" {
-  name       = "metrics-server"
-  repository = "https://kubernetes-sigs.github.io/metrics-server"
-  chart      = "metrics-server"
-  version    = "3.8.4"
-
-  namespace  = "metrics-server"
-  create_namespace = true
-}
-
-
-resource "kubernetes_manifest" "cluster_issuer" {
-  manifest = {
-    apiVersion = "cert-manager.io/v1"
-    kind       = "ClusterIssuer"
-    metadata = {
-      name      = "letsencrypt"
-    }
-    spec = {
-      acme = {
-        email = var.acme_email
-        server = "https://acme-v02.api.letsencrypt.org/directory"
-        privateKeySecretRef = {
-          name = "letsencrypt-issuer-key"
-        }
-        solvers = [{
-          http01 = {
-            ingress = {
-              class = "nginx"
-            }
-          }
-        }]
-      }
-    }
-  }
+resource "helm_release" "nats" {
+  name       = "nats"
+  repository = "https://nats-io.github.io/k8s/helm/charts/"
+  chart      = "nats"
 }

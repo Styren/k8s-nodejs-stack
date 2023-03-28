@@ -3,7 +3,6 @@ remote_state {
   config = {
     secret_suffix    = "${replace(path_relative_to_include(), "/", "-")}"
     load_config_file = true
-    config_path      = "${get_parent_terragrunt_dir()}/config"
   }
   generate = {
     path      = "backend.tf"
@@ -18,10 +17,10 @@ inputs = {
     "kubernetes.io/tls-acme" : "true"
     "cert-manager.io/cluster-issuer" : "letsencrypt"
   }
-  domain              = "x.symbiosis.host"
   container_registry              = "ghcr.io"
 
-  github_username              = "Styren"
+  domain              = ""
+  github_username     = ""
 }
 
 generate "provider" {
@@ -29,12 +28,10 @@ generate "provider" {
   if_exists = "overwrite_terragrunt"
   contents = <<EOF
 provider "kubernetes" {
-  config_path    = "${get_parent_terragrunt_dir()}/config"
 }
 
 provider "helm" {
   kubernetes {
-    config_path    = "${get_parent_terragrunt_dir()}/config"
   }
 }
   EOF
