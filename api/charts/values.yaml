@@ -1,5 +1,3 @@
-host: app.x.symbiosis.host
-
 image:
   imagePullPolicy: IfNotPresent
 
