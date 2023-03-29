@@ -10,3 +10,14 @@ spec:
   storage:
     size: {{ .Values.postgres.storage.size }}
 {{- end }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: {{ include "nodejs-app.fullname" . }}-db
+spec:
+  selector:
+    matchLabels:
+      "cnpg.io/cluster": {{ include "nodejs-app.fullname" . }}-db
+  podMetricsEndpoints:
+  - port: metrics
