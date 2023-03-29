@@ -1,5 +1,6 @@
-FROM node:18 As development
-RUN curl -f https://get.pnpm.io/v6.16.js | node - add --global pnpm
+FROM node:19 As development
+ENV PNPM_VERSION 7.30.1
+RUN curl -L https://unpkg.com/@pnpm/self-installer | node
 
 WORKDIR /usr/src/app
 
@@ -12,8 +13,9 @@ RUN pnpm install
 
 USER node
 
-FROM node:18 As build
-RUN curl -f https://get.pnpm.io/v6.16.js | node - add --global pnpm
+FROM node:19 As build
+ENV PNPM_VERSION 7.30.1
+RUN curl -L https://unpkg.com/@pnpm/self-installer | node
 
 WORKDIR /usr/src/app
 
@@ -31,7 +33,7 @@ RUN pnpm install --prod
 
 USER node
 
-FROM node:18-alpine As production
+FROM node:19-alpine As production
 
 COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
 COPY --chown=node:node --from=build /usr/src/app/dist ./dist
