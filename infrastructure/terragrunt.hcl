@@ -17,7 +17,6 @@ remote_state {
   config = {
     secret_suffix    = "root"
     load_config_file = true
-    config_path      = "${get_parent_terragrunt_dir()}/config"
   }
   generate = {
     path      = "backend.tf"

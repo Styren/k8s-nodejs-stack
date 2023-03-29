@@ -19,8 +19,7 @@ inputs = {
   }
   container_registry              = "ghcr.io"
 
-  domain              = ""
-  github_username     = ""
+  domain              = "ENTER_YOUR_DOMAIN_NAME_HERE"
 }
 
 generate "provider" {

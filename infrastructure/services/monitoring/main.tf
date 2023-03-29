@@ -1,6 +1,5 @@
 locals {
-  namespace  = "prometheus-stack"
-  grafana_host      = "dashboard.${var.domain}"
+  namespace = "monitoring"
 
   ingress_annotations = {
     "acme.cert-manager.io/http01-edit-in-place" : "true"
@@ -44,9 +43,9 @@ resource "helm_release" "prometheus_stack" {
 
   values = [
     templatefile("${path.module}/values.yaml", {
-      namespace                     = local.namespace,
-      grafana_host                  = local.grafana_host,
-      ingress_annotations           = jsonencode(local.ingress_annotations),
+      namespace           = local.namespace,
+      grafana_host        = "grafana.${var.domain}",
+      ingress_annotations = jsonencode(local.ingress_annotations),
     })
   ]
 

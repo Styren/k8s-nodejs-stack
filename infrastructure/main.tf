@@ -9,7 +9,7 @@ locals {
 
 resource "kubernetes_config_map" "domain" {
   metadata {
-    name      = "domain"
+    name = "domain"
   }
 
   data = {
@@ -24,7 +24,7 @@ resource "kubernetes_manifest" "jaeger" {
     kind       = "Jaeger"
     metadata = {
       name      = "jaeger"
-      namespace  = "default"
+      namespace = "default"
     }
     spec = {
       ingress = {
@@ -37,7 +37,7 @@ resource "kubernetes_manifest" "jaeger" {
 resource "kubernetes_ingress_v1" "jaeger" {
   metadata {
     name        = "jaeger"
-    namespace  = "default"
+    namespace   = "default"
     annotations = local.ingress_annotations
   }
   spec {
@@ -99,4 +99,38 @@ resource "helm_release" "nats" {
   name       = "nats"
   repository = "https://nats-io.github.io/k8s/helm/charts/"
   chart      = "nats"
+}
+
+resource "kubernetes_manifest" "cnpg_prometheus_rule" {
+  manifest = yamldecode(file("./cnpg-default-alerts.yaml"))
+}
+
+resource "kubernetes_manifest" "cnpg_grafana_dashboard" {
+  manifest = yamldecode(file("./cnpg-grafana-dashboard.yaml"))
+}
+
+resource "kubernetes_manifest" "cluster_issuer" {
+  manifest = {
+    apiVersion = "cert-manager.io/v1"
+    kind       = "ClusterIssuer"
+    metadata = {
+      name      = "letsencrypt"
+    }
+    spec = {
+      acme = {
+        email = var.acme_email
+        privateKeySecretRef = {
+          name = "letsencrypt"
+        }
+        server = "https://acme-v02.api.letsencrypt.org/directory"
+        solvers = [{
+          http01 = {
+            ingress = {
+              class = "nginx"
+            }
+          }
+        }]
+      }
+    }
+  }
 }
