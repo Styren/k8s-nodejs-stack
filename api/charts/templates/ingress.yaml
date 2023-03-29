@@ -14,10 +14,10 @@ metadata:
 spec:
   tls:
     - hosts:
-      - api.{{ (lookup "v1" "ConfigMap" "" "domain").data.domain | quote }}
+      - api.{{ (lookup "v1" "ConfigMap" "default" "domain").data.domain }}
       secretName: {{ $fullname }}-tls
   rules:
-    - host: api.{{ (lookup "v1" "ConfigMap" "" "domain").data.domain | quote }}
+    - host: api.{{ (lookup "v1" "ConfigMap" "default" "domain").data.domain }}
       http:
         paths:
           - path: /
