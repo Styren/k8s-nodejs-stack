@@ -1,14 +1,6 @@
 # Requirements
 - A running Kubernetes cluster (with a kubeconfig file installed at `.kube/config`)
 - A registered domain name and access to DNS configuration
-- Terragrunt
-- Helm
-
-Install dependencies:
-
-```bash
-brew install terragrunt helm
-```
 
 # Features
 
@@ -37,6 +29,11 @@ sh ./install.sh
 ```
 
 # Manual Installation
+
+Install dependencies:
+```bash
+brew install terragrunt helm
+```
 
 1. Fork this repository and clone it locally
 2. Create an GitHub repository secret named KUBECONFIG (`Settings` > `Secrets & Variables` > `Actions` > `New repository secret`) with the contents of your kubeconfig file
