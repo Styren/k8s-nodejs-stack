@@ -3,12 +3,12 @@ include "root" {
 }
 
 dependency "cloudnative_pg" {
-  config_path = "./services/cloudnative-pg"
+  config_path = "./modules/cloudnative-pg"
   skip_outputs = true
 }
 
 dependency "cert_manager" {
-  config_path = "./services/cert-manager"
+  config_path = "./modules/cert-manager"
   skip_outputs = true
 }
 

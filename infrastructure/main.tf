@@ -95,12 +95,6 @@ resource "kubernetes_secret" "github_pat" {
   type = "kubernetes.io/dockerconfigjson"
 }
 
-resource "helm_release" "nats" {
-  name       = "nats"
-  repository = "https://nats-io.github.io/k8s/helm/charts/"
-  chart      = "nats"
-}
-
 resource "kubernetes_manifest" "cnpg_prometheus_rule" {
   manifest = yamldecode(file("./cnpg-default-alerts.yaml"))
 }
