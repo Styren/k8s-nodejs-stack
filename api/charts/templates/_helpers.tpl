@@ -2,7 +2,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "nodejs-app.name" -}}
+{{- define "nodejs-api.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
@@ -11,7 +11,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "nodejs-app.fullname" -}}
+{{- define "nodejs-api.fullname" -}}
 {{- if .Values.fullnameOverride -}}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
@@ -27,14 +27,14 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "nodejs-app.chart" -}}
+{{- define "nodejs-api.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/* Common labels */}}
-{{- define "nodejs-app.labels" -}}
-helm.sh/chart: {{ include "nodejs-app.chart" . }}
-{{ include "nodejs-app.selectorLabels" . }}
+{{- define "nodejs-api.labels" -}}
+helm.sh/chart: {{ include "nodejs-api.chart" . }}
+{{ include "nodejs-api.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -42,15 +42,15 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end -}}
 
 {{/* Selector labels */}}
-{{- define "nodejs-app.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "nodejs-app.name" . }}
+{{- define "nodejs-api.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "nodejs-api.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
 
 {{/* Create the name of the service account to use */}}
-{{- define "nodejs-app.serviceAccountName" -}}
+{{- define "nodejs-api.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create -}}
-    {{ default (include "nodejs-app.fullname" .) .Values.serviceAccount.name }}
+    {{ default (include "nodejs-api.fullname" .) .Values.serviceAccount.name }}
 {{- else -}}
     {{ default "default" .Values.serviceAccount.name }}
 {{- end -}}
