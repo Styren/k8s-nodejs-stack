@@ -1,5 +1,5 @@
 image:
-  imagePullPolicy: IfNotPresent
+  imagePullPolicy: Always
 
 postgres:
   enabled: true

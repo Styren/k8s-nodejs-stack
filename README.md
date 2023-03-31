@@ -7,10 +7,10 @@
 - Highly-available Postgres database
     - Automatic daily backups
     - Zero-downtime upgrades
-    - Integrated monitoring & dashboard (TODO)
+    - Integrated monitoring & dashboard
 - NodeJS backend
-    - Pre-built Grafana dashboard (TODO)
-- Observability stack
+    - Integrated monitoring & Grafana dashboard
+- Observability
     - Distributed tracing with Jaeger
     - Pulls and aggregates metrics from all services
     - Telemetry, databases, tracing connected to Grafana
