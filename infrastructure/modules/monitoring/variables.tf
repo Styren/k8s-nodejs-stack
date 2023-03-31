@@ -27,7 +27,7 @@ variable "jaeger_helm_chart" {
 }
 
 variable "jaeger_helm_version" {
-  default = "2.24.0"
+  default = "2.41.0"
 }
 
 variable "domain" {}

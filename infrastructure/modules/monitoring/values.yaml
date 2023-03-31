@@ -32,7 +32,10 @@ grafana:
       enabled: true
     users:
       auto_assign_org_role: "Editor"
-
+  additionalDataSources:
+    - name: Jaeger
+      type: jaeger
+      url: https://jaeger-query.monitoring:16686
   persistence:
     type: pvc
     enabled: true

@@ -44,7 +44,7 @@ resource "helm_release" "prometheus_stack" {
   values = [
     templatefile("${path.module}/values.yaml", {
       namespace           = local.namespace,
-      grafana_host        = "dashboard.${var.domain}",
+      grafana_host        = "grafana.${var.domain}",
       ingress_annotations = jsonencode(local.ingress_annotations),
     })
   ]

@@ -24,7 +24,7 @@ resource "kubernetes_manifest" "jaeger" {
     kind       = "Jaeger"
     metadata = {
       name      = "jaeger"
-      namespace = "default"
+      namespace = "monitoring"
     }
     spec = {
       ingress = {
@@ -37,7 +37,7 @@ resource "kubernetes_manifest" "jaeger" {
 resource "kubernetes_ingress_v1" "jaeger" {
   metadata {
     name        = "jaeger"
-    namespace   = "default"
+    namespace   = "monitoring"
     annotations = local.ingress_annotations
   }
   spec {
@@ -101,6 +101,10 @@ resource "kubernetes_manifest" "cnpg_prometheus_rule" {
 
 resource "kubernetes_manifest" "cnpg_grafana_dashboard" {
   manifest = yamldecode(file("./cnpg-grafana-dashboard.yaml"))
+}
+
+resource "kubernetes_manifest" "nodejs_grafana_dashboard" {
+  manifest = yamldecode(file("./nodejs-grafana-dashboard.yaml"))
 }
 
 resource "kubernetes_manifest" "cluster_issuer" {
