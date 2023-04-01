@@ -7,10 +7,15 @@ set -e
 echo "${bold}[Dependencies]${normal}"
 echo "Making sure dependencies are installed..."
 
+if ! docker ps; then
+  echo "Docker doesn't appear to be running, exiting ❌"
+  exit 1
+fi
+
 if which terragrunt; then
-  echo "\tTerragrunt ✅"
+  echo "Terragrunt installed ✅"
 else
-  read -p "\tTerragrunt is not installed — do you want to install it? (y/N) " -n 1 -r
+  read -p "Terragrunt is not installed — do you want to install it? (y/N) " -n 1 -r
   echo ""
   if [[ $REPLY =~ ^[Yy]$ ]]
   then
@@ -22,9 +27,9 @@ else
 fi
 
 if which kubectl; then
-  echo "\tKubectl ✅"
+  echo "Kubectl installed ✅"
 else
-  read -p "\tKubectl is not installed — do you want to install it? (y/N) " -n 1 -r
+  read -p "Kubectl is not installed — do you want to install it? (y/N) " -n 1 -r
   echo ""
   if [[ $REPLY =~ ^[Yy]$ ]]
   then
@@ -35,9 +40,9 @@ else
 fi
 
 if which helm; then
-  echo "\tHelm ✅"
+  echo "Helm installed ✅"
 else
-  read -p "\tHelm is not installed — do you want to install it? (y/N) " -n 1 -r
+  read -p "Helm is not installed — do you want to install it? (y/N) " -n 1 -r
   echo ""
   if [[ $REPLY =~ ^[Yy]$ ]]
   then
@@ -77,26 +82,25 @@ read -p "Enter your PAT: " GITHUB_PAT
 read -p "Enter the GitHub username you used to generate the PAT: " GITHUB_USERNAME
 
 echo "Logging in to GitHub package registry..."
-echo $GITHUB_PAT | docker login ghcr.io --username $GITHUB_USERNAME --password-stdin
+echo $GITHUB_PAT | docker login ghcr.io --username "$GITHUB_USERNAME" --password-stdin
 echo "Done ✅"
 
 echo "${bold}[Email]${normal}"
-echo "LetsEncrypt require that you register your email address in order to use them to generateTLS certificates, make sure to use your real email as it may otherwise be rejected"
+echo "An email is required by LetsEncrypt in order to send warnings about certificates about to expire"
 read -p "Enter your email address: " ACME_EMAIL
 
 echo "${bold}[Domain name]${normal}"
-echo "Next up is configuring the DNS settings so that requests to your selected domain name will resolve to the IPv4 address for the load balancer"
-echo "By creating a wildcard DNS record we can resolve all subdomains to our load balancer address"
-echo "Create a CNAME record in your DNS settings with host ${bold}*${normal} and value ${bold}$LB_IPV4${normal}"
-echo "${bold}Note:${normal} You can use a subdomain by setting the host to ${bold}*.mysubdomain${normal}, but make sure to include that subdomain in the value entered below"
+echo "Next we configure DNS settings so that requests to your selected domain name will resolve to the IPv4 address for the NGINX load balancer"
+echo "Create an A record in your DNS settings with value ${bold}@${normal} and value ${bold}$LB_IPV4${normal}"
+echo "${bold}Note:${normal} You can use a subdomain by setting the value to ${bold}mysubdomain${normal}, but make sure to include that subdomain in the value entered below"
 
 read -p "Enter your domain name: " DOMAIN_NAME
 echo 'Verifying DNS settings...'
-DIG_RES=$(dig "*.$DOMAIN_NAME" +short)
+DIG_RES=$(dig "$DOMAIN_NAME" +short)
 if [ "$DIG_RES" = "$LB_IPV4" ]; then
-  echo "Record for *.$DOMAIN_NAME: $DIG_RES ✅"
+  echo "Record for "$DOMAIN_NAME": "$DIG_RES" ✅"
 else
-  read -p "Record for *.$DOMAIN_NAME: $DIG_RES (wanted $LB_IPV4) ❌ Proceed anyway? (y/N)" -n 1 -r
+  read -p "Record for "$DOMAIN_NAME": "$DIG_RES" (wanted $LB_IPV4) ❌ Proceed anyway? (y/N)" -n 1 -r
   echo ""
   if ! [[ $REPLY =~ ^[Yy]$ ]]; then
     exit 1
@@ -138,5 +142,5 @@ helm upgrade --install nodejs-api --wait --set "image.repository=$API_TAG" ./cha
 popd
 echo "---"
 echo "All done! ✅"
-echo "Access Grafana at grafana.$DOMAIN_NAME"
-echo "Access API at api.$DOMAIN_NAME"
+echo "Access Grafana at $DOMAIN_NAME/grafana"
+echo "Access API at $DOMAIN_NAME/api"
