@@ -39,13 +39,17 @@ brew install terragrunt helm
 2. Create an GitHub repository secret named KUBECONFIG (`Settings` > `Secrets & Variables` > `Actions` > `New repository secret`) with the contents of your kubeconfig file
 3. Create a Personal access token (PAT) with `read:packages` permission (https://github.com/settings/tokens)
 4. Copy the file `infrastructure/terraform.tfvars.skel` to `infrastructure/terraform.tfvars` and fill it in with your email, the PAT and your GitHub username
-5. Create a DNS A record with the value `*` pointing to the ingress IP address (you can find it with `kubectl get svc -n nginx-ingress nginx-ingress-ingress-nginx-controller --output jsonpath='{.status.loadBalancer.ingress[0].ip}'`) and set the domain name in `infratructure/root.hcl`
+5. Create a DNS A record with the value[1] pointing to the ingress IP address (you can find it with `kubectl get svc -n nginx-ingress nginx-ingress-ingress-nginx-controller --output jsonpath='{.status.loadBalancer.ingress[0].ip}'`) and set the domain name in `infratructure/root.hcl`
 6. Run `terragrunt run-all apply` in the `infrastructure` directory
 8. Push an empty commit to trigger deployment of the API service (`git commit --allow-empty -m "initial commit"`)
 
+[1] I.e. enter `mycluster` as value to access the cluster at mycluster.example.com, given that example.com is the domain name.
+
 # FAQ
 
-## How do I find the password to Grafana?
+## How do I access Grafana?
+
+Grafana is accessible at <DOMAIN_NAME>/grafana.
 
 Log in with username `admin` and password from the `grafana-password` secret in the `monitoring` namespace, you can get it with kubectl:
 
@@ -55,10 +59,10 @@ kubectl get secret -n monitoring grafana-password --template={{.data.password}} 
 
 ## How do I access the backend over HTTPS?
 
-The backend API is accessable at `api.<DOMAIN_NAME>` where the domain name is the value you put in the `terraform.tfvars` file. Or using curl:
+The backend API is accessable at `<DOMAIN_NAME>/api` where the domain name is the value you put in the `terraform.tfvars` file. Or using curl:
 
 ```bash
-curl https://api.<DOMAIN_NAME>
+curl https://<DOMAIN_NAME>/api
 ```
 
 ## How do I access the postgres CLI?

@@ -24,8 +24,9 @@ grafana:
 
   grafana.ini:
     server:
-      domain: ${grafana_host}
-      root_url: "%(protocol)s://%(domain)s/"
+      domain: ${host}
+      root_url: "%(protocol)s://%(domain)s/grafana/"
+      serve_from_sub_path: true
     alerting:
       enabled: false
     unified_alerting:
@@ -47,15 +48,16 @@ grafana:
   ingress:
     enabled: true
     annotations:
-      "acme.cert-manager.io/http01-edit-in-place": "true"
       "kubernetes.io/ingress.class": "nginx"
       "kubernetes.io/tls-acme": "true"
       "cert-manager.io/cluster-issuer": "letsencrypt"
-    hosts: ["${grafana_host}"]
+      "nginx.ingress.kubernetes.io/rewrite-target": "/$2"
+    hosts: ["${host}"]
     pathType: Prefix
+    path: /grafana(/|$)(.*)
     tls:
       - secretName: grafana-general-tls
-        hosts: ["${grafana_host}"]
+        hosts: ["${host}"]
 
 prometheus:
   enabled: true
